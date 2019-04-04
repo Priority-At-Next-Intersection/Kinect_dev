@@ -4,11 +4,11 @@
 winexe
 C#
 .cs
-E:\Kinect_dev\Kinect\obj\Debug\
+E:\Kinect_dev\Kinect\obj\Release\
 Kinect
 none
 false
-DEBUG;TRACE
+TRACE
 E:\Kinect_dev\Kinect\App.xaml
 11151548125
 
@@ -16,5 +16,5 @@ E:\Kinect_dev\Kinect\App.xaml
 151005431157
 MainWindow.xaml;
 
-False
+True
 

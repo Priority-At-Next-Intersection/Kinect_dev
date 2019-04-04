@@ -17,12 +17,6 @@ using Kinect.Properties;
 
 namespace Kinect
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    /// 
-
-
     public partial class MainWindow : Window
     {
         KinectSensor sensor;
@@ -31,17 +25,17 @@ namespace Kinect
         BodyFrameSource bodyFrameSource;
         BodyFrameReader bodyFrameReader;
         DrawingGroup drawingGroup;
-        Point[] fruitPoints=new Point[2];
+        Point[] BallPoints=new Point[2];
         Point[] rectPoints = new Point[2];
-        //Point fruitPoint;
-        Vector[] fruitVelocities = new Vector[2];
+        //Point BallPoint;
+        Vector[] BallVelocities = new Vector[2];
         Point player_1_handL;
         Point player_1_handR;
         Point player_2_handL;
         Point player_2_handR;
 
-        int fruitNum;
-        int fruitSize;
+        int BallNum;
+        int BallSize;
         int headSize;
         int score_1;
         int score_2;
@@ -49,7 +43,7 @@ namespace Kinect
 
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
         public static extern bool DeleteObject(IntPtr hObject);
-        //转化bitmap格式的图片为imagesource类型的图片
+        //Convert image type from 'bitmap' to 'imagesource'
         public static ImageSource ChangeBitmapToImageSource(System.Drawing.Bitmap bitmap)
         {
             IntPtr hBitmap = bitmap.GetHbitmap();
@@ -87,31 +81,31 @@ namespace Kinect
 
             // Get ready to draw graphics
             drawingGroup = new DrawingGroup();
-            fruitNum=2;
+            BallNum=2;
             
-            // Initialize fruit location, velocity, and size
+            // Initialize Ball location, velocity, and size
 
-            fruitPoints[0].X = 0;
-            fruitPoints[0].Y = colorFrameSource.FrameDescription.Height;
-            fruitVelocities[0].X = 15;
-            fruitVelocities[0].Y = 30;
+            BallPoints[0].X = 0;
+            BallPoints[0].Y = colorFrameSource.FrameDescription.Height;
+            BallVelocities[0].X = 40;
+            BallVelocities[0].Y = 80;
 
-            fruitPoints[1].X = 0;
-            fruitPoints[1].Y = colorFrameSource.FrameDescription.Height;
-            fruitVelocities[1].X = 15;
-            fruitVelocities[1].Y = 30;
+            BallPoints[1].X = 0;
+            BallPoints[1].Y = colorFrameSource.FrameDescription.Height;
+            BallVelocities[1].X = 45;
+            BallVelocities[1].Y = 79;
 
-            //fruitpoints[2].x = 0;
-            //fruitpoints[2].y = colorframesource.framedescription.height;
-            //fruitvelocities[2].x = 15;
-            //fruitvelocities[2].y = 30;
+            //BallPoints[2].X = 0;
+            //BallPoints[2].Y = colorFrameSource.FrameDescription.Height;
+            //BallVelocities[2].X = 20;
+            //BallVelocities[2].Y = 40;
 
-            //fruitpoints[3].x = 0;
-            //fruitpoints[3].y = colorframesource.framedescription.height;
-            //fruitvelocities[3].x = 15;
-            //fruitvelocities[3].y = 30;
+            //Ballpoints[3].x = 0;
+            //Ballpoints[3].y = colorframesource.framedescription.height;
+            //Ballvelocities[3].x = 15;
+            //Ballvelocities[3].y = 30;
 
-            fruitSize = 70;
+            BallSize = 70;
             headSize = 0;
             // Initialize a random generator
             randomGenerator = new Random();
@@ -220,15 +214,15 @@ namespace Kinect
                         
                         drawCameraPoint(leftHandPoint, Brushes.Blue, 15, canvas);
                         drawCameraPoint(rightHandPoint, Brushes.Red, 15, canvas);
-                        for(int i=0;i<fruitNum;i++)
+                        for(int i=0;i<BallNum;i++)
                         {
                             // Left Hand
-                            if (checkFruitCollision(leftHandPoint, fruitPoints[i], fruitSize))
+                            if (checkBallCollision(leftHandPoint, BallPoints[i], BallSize))
                             {
                                 
-                                //fruitPoints[i] = new Point(-100, -100);
-                                fruitVelocities[i].X = speed_L.X*100 ;
-                                fruitVelocities[i].Y = speed_L.Y*100 ;
+                                //BallPoints[i] = new Point(-100, -100);
+                                BallVelocities[i].X = speed_L.X*100 ;
+                                BallVelocities[i].Y = speed_L.Y*100 ;
                                 // Increase the score
                                 if (personID == 1)
                                 {
@@ -244,12 +238,12 @@ namespace Kinect
                             }
 
                             //Right Hand
-                            if (checkFruitCollision(rightHandPoint, fruitPoints[i], fruitSize))
+                            if (checkBallCollision(rightHandPoint, BallPoints[i], BallSize))
                             {
 
-                                //fruitPoints[i] = new Point(-100, -100);
-                                fruitVelocities[i].X = speed_R.X*100 ;
-                                fruitVelocities[i].Y = speed_R.Y*100 ;
+                                //BallPoints[i] = new Point(-100, -100);
+                                BallVelocities[i].X = speed_R.X*100 ;
+                                BallVelocities[i].Y = speed_R.Y*100 ;
                                 // Increase the score
                                 if (personID == 1)
                                 {
@@ -282,27 +276,27 @@ namespace Kinect
                         }
                     }
                 }
-                for (int i = 0; i < fruitNum; i++)
+                for (int i = 0; i < BallNum; i++)
                 {
-                    // Move the fruit
-                    fruitPoints[i].X += fruitVelocities[i].X;
-                    fruitPoints[i].Y += fruitVelocities[i].Y;
+                    // Move the Ball
+                    BallPoints[i].X += BallVelocities[i].X;
+                    BallPoints[i].Y += BallVelocities[i].Y;
 
-                    // Apply gravity to the fruit
-                    fruitVelocities[i].Y += 0.6;
+                    // Apply gravity to the Ball
+                    BallVelocities[i].Y += 0.9;
 
-                    // Check if the fruit is off the screen
-                    if (fruitPoints[i].X > 0 && fruitPoints[i].X < colorFrameSource.FrameDescription.Width
-                    && fruitPoints[i].Y > 0 && fruitPoints[i].Y < colorFrameSource.FrameDescription.Height)
+                    // Check if the Ball is off the screen
+                    if (BallPoints[i].X > 0 && BallPoints[i].X < colorFrameSource.FrameDescription.Width
+                    && BallPoints[i].Y > 0 && BallPoints[i].Y < colorFrameSource.FrameDescription.Height)
                     {
-                        // Draw the fruit
-                        canvas.DrawEllipse(Brushes.Yellow, null, fruitPoints[i], 1, 1);
-                        double p = fruitPoints[i].X - fruitSize;
-                        double q = fruitPoints[i].Y - fruitSize;
+                        // Draw the Ball
+                        canvas.DrawEllipse(Brushes.Yellow, null, BallPoints[i], 1, 1);
+                        double p = BallPoints[i].X - BallSize;
+                        double q = BallPoints[i].Y - BallSize;
                         rectPoints[i].X = p;
                         rectPoints[i].Y = q;
                         Rect rect;
-                        rect = new Rect(rectPoints[i], new Size(fruitSize * 2, fruitSize * 2));
+                        rect = new Rect(rectPoints[i], new Size(BallSize * 2, BallSize * 2));
                         if (i==0)
                         {
                             canvas.DrawImage(ChangeBitmapToImageSource(Properties.Resources.volleyball), rect);
@@ -316,16 +310,16 @@ namespace Kinect
                     }
                     else
                     {
-                        // Reset the fruit location and velocity
+                        // Reset the Ball location and velocity
                         if (randomGenerator.Next(2) == 1) // Pick a random side to start from
                         {
-                            fruitPoints[i] = new Point(colorFrameSource.FrameDescription.Width, colorFrameSource.FrameDescription.Height);
-                            fruitVelocities[i] = new Vector(-15, -30);
+                            BallPoints[i] = new Point(colorFrameSource.FrameDescription.Width, colorFrameSource.FrameDescription.Height);
+                            BallVelocities[i] = new Vector(-20, -40);
                         }
                         else
                         {
-                            fruitPoints[i] = new Point(0, colorFrameSource.FrameDescription.Height);
-                            fruitVelocities[i] = new Vector(15, -30);
+                            BallPoints[i] = new Point(0, colorFrameSource.FrameDescription.Height);
+                            BallVelocities[i] = new Vector(20, -40);
                         }
                     }
                 }
@@ -333,18 +327,18 @@ namespace Kinect
                 DrawingImage.Source = new DrawingImage(drawingGroup);
             }
         }
-        private bool checkFruitCollision(CameraSpacePoint cameraPoint, Point fruitPoint, int fruitSize)
+        private bool checkBallCollision(CameraSpacePoint cameraPoint, Point BallPoint, int BallSize)
         {
             // Convert the CameraSpacePoint to a 2D point
             var colorPoint = sensor.CoordinateMapper.MapCameraPointToColorSpace(cameraPoint);
             var canvasPoint = new Point(colorPoint.X, colorPoint.Y);
 
-            // Get the pythagorean distance between the hand and the fruit
-            var dist = Math.Sqrt(Math.Pow(canvasPoint.X - fruitPoint.X, 2) +
-                Math.Pow(canvasPoint.Y - fruitPoint.Y, 2));
+            // Get the pythagorean distance between the hand and the Ball
+            var dist = Math.Sqrt(Math.Pow(canvasPoint.X - BallPoint.X, 2) +
+                Math.Pow(canvasPoint.Y - BallPoint.Y, 2));
 
             // If the distance is less than the radius, then we have a collision
-            if (dist < fruitSize)
+            if (dist < BallSize*1.2)
             {
                 return true;
             }
