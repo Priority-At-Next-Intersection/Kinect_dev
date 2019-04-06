@@ -26,6 +26,7 @@ namespace Kinect
         BodyFrameReader bodyFrameReader;
         DrawingGroup drawingGroup;
         Point[] BallPoints=new Point[2];
+        Point[] lastFrameBallPoints = new Point[2];
         Point[] rectPoints = new Point[2];
         //Point BallPoint;
         Vector[] BallVelocities = new Vector[2];
@@ -33,6 +34,7 @@ namespace Kinect
         Point player_1_handR;
         Point player_2_handL;
         Point player_2_handR;
+
 
         int BallNum;
         int BallSize;
@@ -107,6 +109,8 @@ namespace Kinect
 
             BallSize = 70;
             headSize = 0;
+   
+
             // Initialize a random generator
             randomGenerator = new Random();
 
@@ -217,45 +221,64 @@ namespace Kinect
                         for(int i=0;i<BallNum;i++)
                         {
                             // Left Hand
-                            if (checkBallCollision(leftHandPoint, BallPoints[i], BallSize))
+                            if (checkBallCollision(leftHandPoint, BallPoints[i], 100,i))
                             {
                                 
                                 //BallPoints[i] = new Point(-100, -100);
                                 BallVelocities[i].X = speed_L.X*100 ;
                                 BallVelocities[i].Y = speed_L.Y*100 ;
                                 // Increase the score
-                                if (personID == 1)
-                                {
-                                    score_1++;
-                                    ScoreLabel_1.Content = score_1;
-                                }
-                                if (personID == 2)
-                                {
-                                    score_2++;
-                                    ScoreLabel_2.Content = score_2;
-                                }
+                                //if (personID == 1)
+                                //{
+                                //    score_1++;
+                                //    ScoreLabel_1.Content = score_1;
+                                //}
+                                //if (personID == 2)
+                                //{
+                                //    score_2++;
+                                //    ScoreLabel_2.Content = score_2;
+                                //}
 
                             }
 
                             //Right Hand
-                            if (checkBallCollision(rightHandPoint, BallPoints[i], BallSize))
+                            if (checkBallCollision(rightHandPoint, BallPoints[i], BallSize,i))
                             {
 
                                 //BallPoints[i] = new Point(-100, -100);
                                 BallVelocities[i].X = speed_R.X*100 ;
                                 BallVelocities[i].Y = speed_R.Y*100 ;
                                 // Increase the score
-                                if (personID == 1)
-                                {
-                                    score_1++;
-                                    ScoreLabel_1.Content = score_1;
-                                }
-                                if (personID == 2)
-                                {
-                                    score_2++;
-                                    ScoreLabel_2.Content = score_2;
-                                }
+                                //if (personID == 1)
+                                //{
+                                //    score_1++;
+                                //    ScoreLabel_1.Content = score_1;
+                                //}
+                                //if (personID == 2)
+                                //{
+                                //    score_2++;
+                                //    ScoreLabel_2.Content = score_2;
+                                //}
 
+                            }
+
+                            Point basketPoint_1 = new Point(300, 80);
+                            Point basketPoint_2 = new Point(1000, 80);
+                            if (checkBallCollision(basketPoint_1, BallPoints[i], BallSize,i))
+                            {
+
+
+                                score_2++;
+                                ScoreLabel_2.Content = score_2;
+                                BallVelocities[i].X = -BallVelocities[i].X;
+                                BallVelocities[i].Y = -BallVelocities[i].Y;
+                            }
+                            if (checkBallCollision(basketPoint_2, BallPoints[i], BallSize,i))
+                            {
+                                score_1++;
+                                ScoreLabel_1.Content = score_1;
+                                BallVelocities[i].X = -BallVelocities[i].X;
+                                BallVelocities[i].Y = -BallVelocities[i].Y;
                             }
                         }
                         if (personID == 1)
@@ -278,6 +301,8 @@ namespace Kinect
                 }
                 for (int i = 0; i < BallNum; i++)
                 {
+                    lastFrameBallPoints[i].X = BallPoints[i].X;
+                    lastFrameBallPoints[i].Y = BallPoints[i].Y;
                     // Move the Ball
                     BallPoints[i].X += BallVelocities[i].X;
                     BallPoints[i].Y += BallVelocities[i].Y;
@@ -327,8 +352,29 @@ namespace Kinect
                 DrawingImage.Source = new DrawingImage(drawingGroup);
             }
         }
-        private bool checkBallCollision(CameraSpacePoint cameraPoint, Point BallPoint, int BallSize)
+
+        private bool checkBallCollision(Point basketPoint, Point BallPoint, int size, int i)
         {
+            BallPoint.X = BallPoint.X + BallPoints[i].X - lastFrameBallPoints[i].X;
+            BallPoint.Y = BallPoint.Y + BallPoints[i].Y - lastFrameBallPoints[i].Y;
+            var dist = Math.Sqrt(Math.Pow(basketPoint.X - BallPoint.X, 2) +
+                Math.Pow(basketPoint.Y - BallPoint.Y, 2));
+
+            // If the distance is less than the radius, then we have a collision
+            if (dist < size)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private bool checkBallCollision(CameraSpacePoint cameraPoint, Point BallPoint, int BallSize, int i)
+        {
+            BallPoint.X = BallPoint.X + BallPoints[i].X - lastFrameBallPoints[i].X;
+            BallPoint.Y = BallPoint.Y + BallPoints[i].Y - lastFrameBallPoints[i].Y;
             // Convert the CameraSpacePoint to a 2D point
             var colorPoint = sensor.CoordinateMapper.MapCameraPointToColorSpace(cameraPoint);
             var canvasPoint = new Point(colorPoint.X, colorPoint.Y);

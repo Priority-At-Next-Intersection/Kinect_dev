@@ -69,3 +69,4 @@ E:\Kinect_dev\Kinect\obj\Debug\Kinect.csproj.CoreCompileInputs.cache
 E:\Kinect_dev\Kinect\obj\Debug\Kinect.csproj.CopyComplete
 E:\Kinect_dev\Kinect\obj\Debug\Kinect.exe
 E:\Kinect_dev\Kinect\obj\Debug\Kinect.pdb
+E:\Kinect_dev\Kinect\bin\Debug\Resources\basket.png
