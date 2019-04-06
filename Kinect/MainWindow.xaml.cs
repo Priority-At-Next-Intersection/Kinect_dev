@@ -30,11 +30,12 @@ namespace Kinect
         Point[] rectPoints = new Point[2];
         //Point BallPoint;
         Vector[] BallVelocities = new Vector[2];
-        Point player_1_handL;
-        Point player_1_handR;
-        Point player_2_handL;
-        Point player_2_handR;
-
+        Point player_1_LastLHand;
+        Point player_1_LastRHand;
+        Point player_2_LastLHand;
+        Point player_2_LastRHand;
+        Point basketPoint_1 = new Point(300, 80);
+        Point basketPoint_2 = new Point(1000, 80);
 
         int BallNum;
         int BallSize;
@@ -85,8 +86,9 @@ namespace Kinect
             // Get ready to draw graphics
             drawingGroup = new DrawingGroup();
             BallNum=2;
-            
+
             // Initialize Ball location, velocity, and size
+
 
             BallPoints[0].X = 0;
             BallPoints[0].Y = colorFrameSource.FrameDescription.Height;
@@ -98,24 +100,12 @@ namespace Kinect
             BallVelocities[1].X = 45;
             BallVelocities[1].Y = 79;
 
-            //BallPoints[2].X = 0;
-            //BallPoints[2].Y = colorFrameSource.FrameDescription.Height;
-            //BallVelocities[2].X = 20;
-            //BallVelocities[2].Y = 40;
-
-            //Ballpoints[3].x = 0;
-            //Ballpoints[3].y = colorframesource.framedescription.height;
-            //Ballvelocities[3].x = 15;
-            //Ballvelocities[3].y = 30;
-
             BallSize = 70;
-            headSize = 150;
-            handSize = 100;
+            headSize = 250;
+            handSize = 125;
 
             // Initialize a random generator
             randomGenerator = new Random();
-
-
 
             InitializeComponent();
         }
@@ -167,7 +157,7 @@ namespace Kinect
                 canvas.DrawRectangle(Brushes.Transparent, null, new Rect(0.0, 0.0,
                     colorFrameSource.FrameDescription.Width, colorFrameSource.FrameDescription.Height));
 
-                // For each body
+                /*********     For each person    ******** */
                 int personID = 0;
                 foreach (var body in bodies)
                 {
@@ -178,30 +168,34 @@ namespace Kinect
                         
                         var leftHandPoint = body.Joints[JointType.HandLeft].Position;
                         var rightHandPoint = body.Joints[JointType.HandRight].Position;
-                        // Uncomment this line to draw a green dot on each tracked joint:
-                        //drawJoints(body, Brushes.Green, canvas);
-                        Vector speed_L= new Vector(0,0);
-                        Vector speed_R = new Vector(0, 0);
-                        // Draw dots on the hand joints
+                        Vector speed_LHand= new Vector(0,0);
+                        Vector speed_RHand = new Vector(0, 0);
+
                         if (personID == 1)
                         {
-                            speed_L.X = body.Joints[JointType.HandLeft].Position.X - player_1_handL.X;
-                            speed_L.Y = body.Joints[JointType.HandLeft].Position.Y - player_1_handL.Y;
+                            var colorPoint = sensor.CoordinateMapper.MapCameraPointToColorSpace(body.Joints[JointType.HandLeft].Position);
+                            var CurrentHand = new Point(colorPoint.X, colorPoint.Y);
 
-                            speed_R.X = body.Joints[JointType.HandRight].Position.X - player_1_handL.X;
-                            speed_R.Y = body.Joints[JointType.HandRight].Position.Y - player_1_handL.Y;
+                            speed_LHand.X = CurrentHand.X - player_1_LastLHand.X;
+                            speed_LHand.Y = CurrentHand.Y - player_1_LastLHand.Y;
 
-                            var headPoint1 = body.Joints[JointType.Head].Position;
-                            drawHeadPoint(headPoint1, canvas);
+                            speed_RHand.X = CurrentHand.X - player_1_LastLHand.X;
+                            speed_RHand.Y = CurrentHand.Y - player_1_LastLHand.Y;
+
+                            var headPoint1 = body.Joints[JointType.Head].Position;//Still Camera coordinate.
+                            drawHeadPoint(headPoint1, canvas);//this func will change camera coordinate into canvas one.
 
                         }
                         if (personID == 2)
                         {
-                            speed_L.X = body.Joints[JointType.HandLeft].Position.X - player_2_handL.X;
-                            speed_L.Y = body.Joints[JointType.HandLeft].Position.Y - player_2_handL.Y;
+                            var colorPoint = sensor.CoordinateMapper.MapCameraPointToColorSpace(body.Joints[JointType.HandLeft].Position);
+                            var canvasPoint = new Point(colorPoint.X, colorPoint.Y);
 
-                            speed_R.X = body.Joints[JointType.HandRight].Position.X - player_2_handL.X;
-                            speed_R.Y = body.Joints[JointType.HandRight].Position.Y - player_2_handL.Y;
+                            speed_LHand.X = canvasPoint.X - player_2_LastLHand.X;
+                            speed_LHand.Y = canvasPoint.Y - player_2_LastLHand.Y;
+
+                            speed_RHand.X = canvasPoint.X - player_2_LastLHand.X;
+                            speed_RHand.Y = canvasPoint.Y - player_2_LastLHand.Y;
 
                             var headPoint2 = body.Joints[JointType.Head].Position;
                             drawHeadPoint(headPoint2, canvas);
@@ -209,123 +203,96 @@ namespace Kinect
                         
                         drawHandPoint(leftHandPoint,canvas);
                         drawHandPoint(rightHandPoint, canvas);
+
                         for(int i=0;i<BallNum;i++)
                         {
                             // Left Hand
                             if (checkBallCollision(leftHandPoint, BallPoints[i], 100,i))
                             {
-                                
-                                //BallPoints[i] = new Point(-100, -100);
-                                BallVelocities[i].X = speed_L.X*100 ;
-                                BallVelocities[i].Y = speed_L.Y*100 ;
-                                // Increase the score
-                                //if (personID == 1)
-                                //{
-                                //    score_1++;
-                                //    ScoreLabel_1.Content = score_1;
-                                //}
-                                //if (personID == 2)
-                                //{
-                                //    score_2++;
-                                //    ScoreLabel_2.Content = score_2;
-                                //}
-
+                                BallVelocities[i].X = speed_LHand.X;
+                                BallVelocities[i].Y = speed_LHand.Y;
                             }
 
                             //Right Hand
                             if (checkBallCollision(rightHandPoint, BallPoints[i], BallSize,i))
                             {
-
-                                //BallPoints[i] = new Point(-100, -100);
-                                BallVelocities[i].X = speed_R.X*100 ;
-                                BallVelocities[i].Y = speed_R.Y*100 ;
-                                // Increase the score
-                                //if (personID == 1)
-                                //{
-                                //    score_1++;
-                                //    ScoreLabel_1.Content = score_1;
-                                //}
-                                //if (personID == 2)
-                                //{
-                                //    score_2++;
-                                //    ScoreLabel_2.Content = score_2;
-                                //}
-
-                            }
-
-                            Point basketPoint_1 = new Point(300, 80);
-                            Point basketPoint_2 = new Point(1000, 80);
-                            if (checkBallCollision(basketPoint_1, BallPoints[i], BallSize,i))
-                            {
-                                score_2++;
-                                ScoreLabel_2.Content = score_2;
-                                BallVelocities[i].X = -BallVelocities[i].X;
-                                BallVelocities[i].Y = -BallVelocities[i].Y;
-                            }
-                            if (checkBallCollision(basketPoint_2, BallPoints[i], BallSize,i))
-                            {
-                                score_1++;
-                                ScoreLabel_1.Content = score_1;
-                                BallVelocities[i].X = -BallVelocities[i].X;
-                                BallVelocities[i].Y = -BallVelocities[i].Y;
+                                BallVelocities[i].X = speed_RHand.X;
+                                BallVelocities[i].Y = speed_RHand.Y;
                             }
                         }
                         if (personID == 1)
                         {
-                            player_1_handL.X = body.Joints[JointType.HandLeft].Position.X;
-                            player_1_handL.Y = body.Joints[JointType.HandLeft].Position.Y;
+                            var colorPoint = sensor.CoordinateMapper.MapCameraPointToColorSpace(body.Joints[JointType.HandLeft].Position);
+                            var canvasPoint = new Point(colorPoint.X, colorPoint.Y);
+
+                            player_1_LastLHand.X = canvasPoint.X;
+                            player_1_LastLHand.Y = canvasPoint.Y;
                             
 
-                            player_1_handR.X = body.Joints[JointType.HandRight].Position.X;
-                            player_1_handR.Y = body.Joints[JointType.HandRight].Position.Y;
+                            player_1_LastRHand.X = canvasPoint.X;
+                            player_1_LastRHand.Y = canvasPoint.Y;
                         }
                         if (personID == 2)
                         {
-                            player_2_handL.X = body.Joints[JointType.HandLeft].Position.X;
-                            player_2_handL.Y = body.Joints[JointType.HandLeft].Position.Y;
+                            var colorPoint = sensor.CoordinateMapper.MapCameraPointToColorSpace(body.Joints[JointType.HandLeft].Position);
+                            var canvasPoint = new Point(colorPoint.X, colorPoint.Y);
 
-                            player_2_handR.X = body.Joints[JointType.HandRight].Position.X;
-                            player_2_handR.Y = body.Joints[JointType.HandRight].Position.Y;
+                            player_2_LastLHand.X = canvasPoint.X;
+                            player_2_LastLHand.Y = canvasPoint.Y;
+
+                            player_2_LastRHand.X = canvasPoint.X;
+                            player_2_LastRHand.Y = canvasPoint.Y;
                         }
                     }
                 }
+
+                /*********     For each ball    ******** */
                 for (int i = 0; i < BallNum; i++)
                 {
                     lastFrameBallPoints[i].X = BallPoints[i].X;
                     lastFrameBallPoints[i].Y = BallPoints[i].Y;
-                    // Move the Ball
+
                     BallPoints[i].X += BallVelocities[i].X;
                     BallPoints[i].Y += BallVelocities[i].Y;
-
-                    // Apply gravity to the Ball
+                    if (checkBallCollision(basketPoint_1, BallPoints[i], BallSize, i))
+                    {
+                        score_2++;
+                        ScoreLabel_2.Content = score_2;
+                        BallVelocities[i].X = -BallVelocities[i].X;
+                        BallVelocities[i].Y = -BallVelocities[i].Y;
+                    }
+                    if (checkBallCollision(basketPoint_2, BallPoints[i], BallSize, i))
+                    {
+                        score_1++;
+                        ScoreLabel_1.Content = score_1;
+                        BallVelocities[i].X = -BallVelocities[i].X;
+                        BallVelocities[i].Y = -BallVelocities[i].Y;
+                    }
                     BallVelocities[i].Y += 0.9;
 
-                    // Check if the Ball is off the screen
+                    // Check if the Ball is in the screen
                     if (BallPoints[i].X > 0 && BallPoints[i].X < colorFrameSource.FrameDescription.Width
                     && BallPoints[i].Y > 0 && BallPoints[i].Y < colorFrameSource.FrameDescription.Height)
                     {
                         // Draw the Ball
-                        canvas.DrawEllipse(Brushes.Yellow, null, BallPoints[i], 1, 1);
-                        double p = BallPoints[i].X - BallSize;
-                        double q = BallPoints[i].Y - BallSize;
-                        rectPoints[i].X = p;
-                        rectPoints[i].Y = q;
+                        rectPoints[i].X = BallPoints[i].X - BallSize;
+                        rectPoints[i].Y = BallPoints[i].Y - BallSize;
                         Rect rect;
                         rect = new Rect(rectPoints[i], new Size(BallSize * 2, BallSize * 2));
                         if (i==0)
                         {
+                            // Ball A
                             canvas.DrawImage(ChangeBitmapToImageSource(Properties.Resources.volleyball), rect);
-
                         }
                         else
                         {
+                            // Ball B
                             canvas.DrawImage(ChangeBitmapToImageSource(Properties.Resources.basketball), rect);
                         }
-
                     }
                     else
                     {
-                        // Reset the Ball location and velocity
+                        // if the Ball is off the screen then Reset the Ball location and velocity
                         if (randomGenerator.Next(2) == 1) // Pick a random side to start from
                         {
                             BallPoints[i] = new Point(colorFrameSource.FrameDescription.Width, colorFrameSource.FrameDescription.Height);
@@ -349,7 +316,6 @@ namespace Kinect
             BallPoint.Y = BallPoint.Y + BallPoints[i].Y - lastFrameBallPoints[i].Y;
             var dist = Math.Sqrt(Math.Pow(basketPoint.X - BallPoint.X, 2) +
                 Math.Pow(basketPoint.Y - BallPoint.Y, 2));
-
             // If the distance is less than the radius, then we have a collision
             if (dist < size)
             {
@@ -369,7 +335,6 @@ namespace Kinect
             var colorPoint = sensor.CoordinateMapper.MapCameraPointToColorSpace(cameraPoint);
             var canvasPoint = new Point(colorPoint.X, colorPoint.Y);
 
-            // Get the pythagorean distance between the hand and the Ball
             var dist = Math.Sqrt(Math.Pow(canvasPoint.X - BallPoint.X, 2) +
                 Math.Pow(canvasPoint.Y - BallPoint.Y, 2));
 
@@ -389,7 +354,6 @@ namespace Kinect
             {
                 // Get the point (in 3D space) for the joint
                 var cameraPoint = body.Joints[jointType].Position;
-
                 // Draw it using the helper method below
                 drawCameraPoint(cameraPoint, brushColor, 15, canvas);
             }
@@ -409,6 +373,7 @@ namespace Kinect
                 canvas.DrawEllipse(brushColor, null, canvasPoint, radius, radius);
             }
         }
+
         private void drawHeadPoint(CameraSpacePoint cameraPoint,DrawingContext canvas)
         {
             // Convert the point into 2D so we can use it on the screen
