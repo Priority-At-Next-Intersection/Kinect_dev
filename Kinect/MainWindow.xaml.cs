@@ -39,6 +39,7 @@ namespace Kinect
         int BallNum;
         int BallSize;
         int headSize;
+        int handSize;
         int score_1;
         int score_2;
         private Random randomGenerator;
@@ -108,8 +109,8 @@ namespace Kinect
             //Ballvelocities[3].y = 30;
 
             BallSize = 70;
-            headSize = 0;
-   
+            headSize = 150;
+            handSize = 100;
 
             // Initialize a random generator
             randomGenerator = new Random();
@@ -174,7 +175,7 @@ namespace Kinect
                     // That is currently being tracked
                     if (body.IsTracked)
                     {
-
+                        
                         var leftHandPoint = body.Joints[JointType.HandLeft].Position;
                         var rightHandPoint = body.Joints[JointType.HandRight].Position;
                         // Uncomment this line to draw a green dot on each tracked joint:
@@ -189,15 +190,10 @@ namespace Kinect
 
                             speed_R.X = body.Joints[JointType.HandRight].Position.X - player_1_handL.X;
                             speed_R.Y = body.Joints[JointType.HandRight].Position.Y - player_1_handL.Y;
-                            
-                            Point headPoint1 = new Point(0,0);
-                            headPoint1.X = body.Joints[JointType.Neck].Position.X - headSize;
-                            headPoint1.Y = body.Joints[JointType.Neck].Position.Y - headSize;
-                            Rect rect1;
-                            
-                            rect1 = new Rect(headPoint1, new Size(headSize * 2, headSize * 2));
-                            //canvas.DrawEllipse(Brushes.DarkGreen, null, headPoint1, 30, 30);
-                            //canvas.DrawImage(ChangeBitmapToImageSource(Properties.Resources.ProfChen), rect1);
+
+                            var headPoint1 = body.Joints[JointType.Head].Position;
+                            drawHeadPoint(headPoint1, canvas);
+
                         }
                         if (personID == 2)
                         {
@@ -207,17 +203,12 @@ namespace Kinect
                             speed_R.X = body.Joints[JointType.HandRight].Position.X - player_2_handL.X;
                             speed_R.Y = body.Joints[JointType.HandRight].Position.Y - player_2_handL.Y;
 
-                            Point headPoint2 = new Point(0, 0);
-                            headPoint2.X = body.Joints[JointType.Neck].Position.X - headSize;
-                            headPoint2.Y = body.Joints[JointType.Neck].Position.Y - headSize;
-                            Rect rect2;
-                            rect2 = new Rect(headPoint2, new Size(headSize * 2, headSize * 2));
-                            //canvas.DrawEllipse(Brushes.DarkGreen, null, headPoint2, 30, 30);
-                            //canvas.DrawImage(ChangeBitmapToImageSource(Properties.Resources.ProfChen), rect2);
+                            var headPoint2 = body.Joints[JointType.Head].Position;
+                            drawHeadPoint(headPoint2, canvas);
                         }
                         
-                        drawCameraPoint(leftHandPoint, Brushes.Blue, 15, canvas);
-                        drawCameraPoint(rightHandPoint, Brushes.Red, 15, canvas);
+                        drawHandPoint(leftHandPoint,canvas);
+                        drawHandPoint(rightHandPoint, canvas);
                         for(int i=0;i<BallNum;i++)
                         {
                             // Left Hand
@@ -266,8 +257,6 @@ namespace Kinect
                             Point basketPoint_2 = new Point(1000, 80);
                             if (checkBallCollision(basketPoint_1, BallPoints[i], BallSize,i))
                             {
-
-
                                 score_2++;
                                 ScoreLabel_2.Content = score_2;
                                 BallVelocities[i].X = -BallVelocities[i].X;
@@ -285,6 +274,7 @@ namespace Kinect
                         {
                             player_1_handL.X = body.Joints[JointType.HandLeft].Position.X;
                             player_1_handL.Y = body.Joints[JointType.HandLeft].Position.Y;
+                            
 
                             player_1_handR.X = body.Joints[JointType.HandRight].Position.X;
                             player_1_handR.Y = body.Joints[JointType.HandRight].Position.Y;
@@ -419,7 +409,44 @@ namespace Kinect
                 canvas.DrawEllipse(brushColor, null, canvasPoint, radius, radius);
             }
         }
+        private void drawHeadPoint(CameraSpacePoint cameraPoint,DrawingContext canvas)
+        {
+            // Convert the point into 2D so we can use it on the screen
+            var colorPoint = sensor.CoordinateMapper.MapCameraPointToColorSpace(cameraPoint);
+            var canvasPoint = new Point(colorPoint.X, colorPoint.Y);
 
+            // Check if it's safe to draw at that point
+            if (canvasPoint.X > 0 && canvasPoint.X < colorFrameSource.FrameDescription.Width
+                && canvasPoint.Y > 0 && canvasPoint.Y < colorFrameSource.FrameDescription.Height)
+            {
+                // Draw a circle
+                Rect rect;
+                canvasPoint.X = canvasPoint.X - headSize/2.0f;
+                canvasPoint.Y = canvasPoint.Y - headSize/2.0f;
+                rect = new Rect(canvasPoint, new Size(headSize, headSize));
+                canvas.DrawImage(ChangeBitmapToImageSource(Properties.Resources.cat), rect);
+                //canvas.DrawEllipse(Brushes.Yellow, null, canvasPoint, 12, 12);
+            }
+        }
 
+        private void drawHandPoint(CameraSpacePoint cameraPoint, DrawingContext canvas)
+        {
+            // Convert the point into 2D so we can use it on the screen
+            var colorPoint = sensor.CoordinateMapper.MapCameraPointToColorSpace(cameraPoint);
+            var canvasPoint = new Point(colorPoint.X, colorPoint.Y);
+
+            // Check if it's safe to draw at that point
+            if (canvasPoint.X > 0 && canvasPoint.X < colorFrameSource.FrameDescription.Width
+                && canvasPoint.Y > 0 && canvasPoint.Y < colorFrameSource.FrameDescription.Height)
+            {
+                // Draw a circle
+                Rect rect;
+                canvasPoint.X = canvasPoint.X - handSize / 2.0f;
+                canvasPoint.Y = canvasPoint.Y - handSize / 2.0f;
+                rect = new Rect(canvasPoint, new Size(handSize, handSize));
+                canvas.DrawImage(ChangeBitmapToImageSource(Properties.Resources.paw), rect);
+                //canvas.DrawEllipse(Brushes.Yellow, null, canvasPoint, 12, 12);
+            }
+        }
     }
 }

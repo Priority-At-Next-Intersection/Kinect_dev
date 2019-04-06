@@ -8,7 +8,7 @@
         Title="MainWindow" Height="781.4" Width="1413.1">
     <Grid>
 
-        <Image x:Name="CameraImage" HorizontalAlignment="Left" Height="742" VerticalAlignment="Top" Width="1406" Stretch="UniformToFill"/>
+        <Image x:Name="CameraImage" HorizontalAlignment="Left" Height="742" VerticalAlignment="Top" Width="1396" Stretch="UniformToFill"/>
         <Label Content="Player 1 Score：" HorizontalAlignment="Left" Margin="14,30,0,0" VerticalAlignment="Top" FontSize="20"/>
         <Label x:Name="ScoreLabel_1" Content="0" HorizontalAlignment="Left" Margin="185,30,0,0" VerticalAlignment="Top" FontSize="20" RenderTransformOrigin="0.558,0.533"/>
 
@@ -17,7 +17,9 @@
         
         <Image x:Name="basket_1" HorizontalAlignment="Left" Height="100" Margin="250,30,0,0" VerticalAlignment="Top" Width="100" Source="pack://siteoforigin:,,,/Resources/basket.png"/>
         <Image x:Name="basket_2" HorizontalAlignment="Left" Height="100" Margin="950,30,0,0" VerticalAlignment="Top" Width="100" Source="pack://siteoforigin:,,,/Resources/basket.png"/>
-        <Image x:Name="DrawingImage" HorizontalAlignment="Left" Height="742" VerticalAlignment="Top" Width="1396"/>
+        <Image x:Name="DrawingImage" HorizontalAlignment="Left" Height="742" VerticalAlignment="Top" Width="1396" Stretch="UniformToFill"/>
+        <TextBox x:Name="TextBox_1" HorizontalAlignment="Left" Height="23" Margin="605,37,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="TextBox_2" HorizontalAlignment="Left" Height="23" Margin="605,70,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
 
     </Grid>
 </Window>

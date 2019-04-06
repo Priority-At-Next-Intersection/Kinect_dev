@@ -93,6 +93,16 @@ namespace Kinect.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap cat {
+            get {
+                object obj = ResourceManager.GetObject("cat", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Durian {
             get {
                 object obj = ResourceManager.GetObject("Durian", resourceCulture);
@@ -106,6 +116,16 @@ namespace Kinect.Properties {
         internal static System.Drawing.Bitmap grapes {
             get {
                 object obj = ResourceManager.GetObject("grapes", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap paw {
+            get {
+                object obj = ResourceManager.GetObject("paw", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
