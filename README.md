@@ -6,4 +6,7 @@
 * Somatosensory game: Utilize figures' skeletons obtained by kinect to implement dunk and cap.
 * Cosplay: Players' faces and hands are replaced by cats' ones. ~ wwwww ~.
 # Preview
-https://github.com/Priority-At-Next-Intersection/Kinect_dev/wiki
+* Menu (Use voice to start or stop the game)
+![](https://github.com/Priority-At-Next-Intersection/Kinect_dev/blob/master/Kinect/bin/Debug/Resources/menu.png?raw=true)
+* Demo (Users' paw can hold balls and shoot them. Cap it to defend.)
+![](https://github.com/Priority-At-Next-Intersection/Kinect_dev/blob/master/Kinect/bin/Debug/DEMO.png?raw=true)
