@@ -1,8 +1,9 @@
 # Kinect_dev
-* motion sensing game
-* This is an assignment of [Prof. Chen's](http://iip.whu.edu.cn/~zzchen/) `Multimedia Technology`
-# Function
-1. Utilize Speech recognization to realize "game start" & "game over". it was compiled into an exe which name is "SpeechMenu.exe" in debug folder.
-2. Utilize Skeleton recognization to make a basketball game. Players' faces and hands are replaced by cats' ones.
+* A Somatosensory basketball game based on Kinect 2.
+* Final project of [Prof. Chen's](http://iip.whu.edu.cn/~zzchen/) `Multimedia Technology`
+# Contents
+* Voice wake up: Utilize Speech recognization to realize `game start` & `game over`. It was compiled into an exe which name is `SpeechMenu.exe` in the `debug` folder.
+* Somatosensory game: Utilize figures' skeletons obtained by kinect to implement dunk and cap.
+* Cosplay: Players' faces and hands are replaced by cats' ones. ~ wwwww ~.
 # Preview
 https://github.com/Priority-At-Next-Intersection/Kinect_dev/wiki
